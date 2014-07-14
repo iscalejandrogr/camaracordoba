@@ -1,67 +1,65 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width;" />
-<meta charset="utf-8" />
-<link href="css/jquery.mobile-1.4.3.min.css" rel="stylesheet" type="text/css"/>
-<link href="css/jquery.mobile.structure-1.4.3.min.css" rel="stylesheet" type="text/css"/>
-<link href="css/jquery.mobile.theme-1.4.3.min.css" rel="stylesheet" type="text/css"/>
-<script src="phonegap.js" type="text/javascript"></script>
-<script src="js/jquery-2.1.1.js" type="text/javascript"></script>
-<script src="js/jquery.mobile-1.4.3.min.js" type="text/javascript"></script>
-    <!--script type="text/javascript" charset="utf-8" src="json2.js"></script-->
+  <head>
+    <title>Example 11-2</title>
+    <meta charset="utf-8">
+    <meta name="viewport" id="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
+    <script type="text/javascript" charset="utf-8" src="phonegap.js"></script>
     <script type="text/javascript" charset="utf-8">
-$(function(){
-  document.addEventListener("deviceready", function(){  
-  alert("si entro inicilizada");
-    var botonfoto=$("#tomarfotos"); 
-    botonfoto.tap(function(){  
-    captureImage();
-    }); 
-        
-  },false);
+      function onBodyLoad() {
+        alert("onBodyLoad");
+        document.addEventListener("deviceready", onDeviceReady, false);
+      }
 
-}); 
-    
-    function captureSuccess(mediaFiles) {
-    alert("ha capturar");
-        var i, len;
-        for (i = 0, len = mediaFiles.length; i < len; i += 1) {
-            uploadFile(mediaFiles[i]);
-        }       
-    }
+      function onDeviceReady() {
+        navigator.notification.alert("onDeviceReady");
+      }
 
-    function captureError(error) {
-        var msg = 'Ocurrió un error mientras se capturaba: ' + error.code;
-        navigator.notification.alert(msg, null, 'Uh oh!');
-    }
+      function takePhoto() {
+        //alert("takePhoto");
+        navigator.camera.getPicture(onCameraSuccess, onCameraError, {
+          quality : 50,
+          destinationType : Camera.DestinationType.FILE_URI
+        });
+        // navigator.camera.getPicture(onCameraSuccess, onCameraError);
+      }
 
-    function captureImage() {
-    alert("funcion para accedera a camara");
-        navigator.device.capture.captureImage(captureSuccess, captureError, {limit: 2});
-    }
+      function onCameraSuccess(imageURL) {
+        navigator.notification.alert("onCameraSuccess: " + imageURL);
+        //Get a handle to the image container div
+        ic = document.getElementById('imageContainer');
+        //Then write an image tag out to the div using the
+        //URL we received from the camera application. 
+        ic.innerHTML = '<img src="' + imageURL + '" width="100%" />';
+      }
 
-    function uploadFile(mediaFile) {
-        /*var ft = new FileTransfer(),
-            path = mediaFile.fullPath,
-            name = mediaFile.name;
-
-        ft.upload(path,
-            "http://my.domain.com/upload.php",
-            function(result) {
-                console.log('Subida correcta: ' + result.responseCode);
-                console.log(result.bytesSent + ' bytes enviados');
-            },
-            function(error) {
-                console.log('Error en la subida del fichero ' + path + ': ' + error.code);
-            },
-            { fileName: name });  */
-            alert("aqui se sube la foto al servidor");
-    }
-
+      function onCameraError(e) {
+        console.log(e);
+        navigator.notification.alert("onCameraError: " + e);
+      }
     </script>
-    </head>
-    <body>
-        <a href="#" data-role="button" id="tomarfotos">Capturar imagen</a>
-    </body>
+	<style type="text/css">
+	body{
+	background-color: #333;
+	color: #ccc;
+	font-family: Verdana, Arial, Sans-serif;
+	font-size: 1.2 em;
+	}
+	h1{
+	text-align: center;
+	}
+	p{
+	text-align: center;
+	}
+	</style>
+  </head>
+  <body onload="onBodyLoad()">
+    <h1>Llamando a la cámara.</h1>
+    <p>
+      Uso de la API de Cámara de PhoneGap
+      <br />
+      <input type="button" value="Toma una foto" onclick="takePhoto();">
+      <div id="imageContainer"></div>
+    </p>
+  </body>
 </html>
